@@ -2,6 +2,7 @@ beautifulsoup4
 gspread
 google-auth
 pandas
+playwright
 python-dateutil
 PyYAML
 requests
