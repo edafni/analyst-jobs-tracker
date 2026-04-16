@@ -58,7 +58,9 @@ Notes:
    - Value: paste the full JSON key contents
    - Name: `ANALYST_JOBS_SPREADSHEET_ID`
    - Value: the spreadsheet id from your sheet URL (the long string between `/d/` and `/edit`)
-3. Actions will run daily and append new jobs.
+3. (Optional) Write to a different tab:
+   - Set workflow env `ANALYST_JOBS_WORKSHEET_TITLE` to your tab name (example: `Analyst Jobs Tracker 2`)
+4. Actions will run daily and append new jobs.
 
 ---
 

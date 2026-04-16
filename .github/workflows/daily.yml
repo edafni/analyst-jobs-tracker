@@ -26,6 +26,7 @@ jobs:
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           ANALYST_JOBS_SPREADSHEET_ID: ${{ secrets.ANALYST_JOBS_SPREADSHEET_ID }}
+          ANALYST_JOBS_WORKSHEET_TITLE: "Analyst Jobs Tracker 2"
           LOG_LEVEL: INFO
           ENABLE_REMOTIVE: "1"
           ENABLE_DDG: "0"

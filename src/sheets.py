@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 SHEET_TITLE = "Analyst Jobs Tracker"
-WORKSHEET_TITLE = "Analyst Jobs Tracker"
+DEFAULT_WORKSHEET_TITLE = "Analyst Jobs Tracker"
 HEADERS = ["Company", "Job Title", "Link", "Status", "Timestamp", "Score"]
 
 
@@ -52,10 +52,11 @@ def open_tracker_sheet(client: gspread.Client) -> gspread.Spreadsheet:
 
 
 def open_or_create_worksheet(spreadsheet: gspread.Spreadsheet) -> gspread.Worksheet:
+    worksheet_title = os.environ.get("ANALYST_JOBS_WORKSHEET_TITLE", "").strip() or DEFAULT_WORKSHEET_TITLE
     try:
-        ws = spreadsheet.worksheet(WORKSHEET_TITLE)
+        ws = spreadsheet.worksheet(worksheet_title)
     except gspread.WorksheetNotFound:
-        ws = spreadsheet.add_worksheet(title=WORKSHEET_TITLE, rows=2000, cols=len(HEADERS))
+        ws = spreadsheet.add_worksheet(title=worksheet_title, rows=2000, cols=len(HEADERS))
     ensure_headers(ws)
     return ws
 
