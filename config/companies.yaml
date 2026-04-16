@@ -6,6 +6,69 @@
 # - org: (for lever/greenhouse) identifier used by the ATS
 
 companies:
+  # Greenhouse (working collectors)
+  - name: Melio
+    careers_url: https://boards.greenhouse.io/melio
+    type: greenhouse
+    org: melio
+
+  - name: Payoneer
+    careers_url: https://boards.greenhouse.io/payoneer
+    type: greenhouse
+    org: payoneer
+
+  - name: Yotpo
+    careers_url: https://boards.greenhouse.io/yotpo
+    type: greenhouse
+    org: yotpo
+
+  - name: Similarweb
+    careers_url: https://boards.greenhouse.io/similarweb
+    type: greenhouse
+    org: similarweb
+
+  - name: Papaya
+    careers_url: https://boards.greenhouse.io/papaya
+    type: greenhouse
+    org: papaya
+
+  - name: Gong
+    careers_url: https://boards.greenhouse.io/gongio
+    type: greenhouse
+    org: gongio
+
+  - name: Pagaya
+    careers_url: https://boards.greenhouse.io/pagaya
+    type: greenhouse
+    org: pagaya
+
+  - name: Unity
+    careers_url: https://boards.greenhouse.io/unity3d
+    type: greenhouse
+    org: unity3d
+
+  - name: HoneyBook
+    careers_url: https://boards.greenhouse.io/honeybook
+    type: greenhouse
+    org: honeybook
+
+  # HTML / custom career sites (placeholders for now)
+  - name: Fiverr
+    careers_url: https://www.fiverr.com/jobs/
+    type: html
+
+  - name: Check Point
+    careers_url: https://careers.checkpoint.com/
+    type: html
+
+  - name: Checkout.com
+    careers_url: https://checkout.com/jobs
+    type: html
+
+  - name: Zencity
+    careers_url: https://zencity.io/careers/
+    type: html
+
   - name: Remitly
     careers_url: https://www.remitly.com/us/en/careers
     type: html
