@@ -7,6 +7,7 @@ from typing import Union
 import yaml
 
 from src.collectors.greenhouse import collect_greenhouse
+from src.collectors.html_careers import collect_html_careers
 from src.collectors.lever import collect_lever
 from src.models import JobPosting
 
@@ -27,6 +28,7 @@ def collect_company_pages(config_path: Union[str, Path]) -> list[JobPosting]:
         name = (c.get("name") or "").strip()
         ctype = (c.get("type") or "").strip().lower()
         org = (c.get("org") or "").strip()
+        careers_url = (c.get("careers_url") or "").strip()
 
         if not name or not ctype:
             continue
@@ -36,6 +38,8 @@ def collect_company_pages(config_path: Union[str, Path]) -> list[JobPosting]:
                 out.extend(collect_greenhouse(org=org, company_name=name))
             elif ctype == "lever" and org:
                 out.extend(collect_lever(org=org, company_name=name))
+            elif ctype == "html" and careers_url:
+                out.extend(collect_html_careers(company_name=name, careers_url=careers_url))
             else:
                 logger.info("Skipping unsupported company config (type=%s, org=%s): %s", ctype, org, name)
         except Exception:
