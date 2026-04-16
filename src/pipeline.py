@@ -13,7 +13,16 @@ from src.filtering import is_relevant_analyst_role
 from src.logging_utils import setup_logging
 from src.models import JobPosting
 from src.scoring import score_job
-from src.sheets import get_client, open_tracker_sheet, open_or_create_worksheet, read_existing_links, append_rows
+from src.sheets import (
+    get_client,
+    open_tracker_sheet,
+    open_or_create_worksheet,
+    read_existing_links,
+    read_link_to_row,
+    get_column_indices,
+    update_cells,
+    append_rows,
+)
 from src.utils import canonicalize_url
 
 logger = logging.getLogger(__name__)
@@ -120,6 +129,33 @@ def main() -> int:
 
     new_jobs = [j for j in jobs if canonicalize_url(j.url) not in existing_canon]
     logger.info("New jobs to append=%d", len(new_jobs))
+
+    # Backfill City for existing rows (when missing) so you don't need to re-import.
+    try:
+        cols = get_column_indices(ws)
+        city_col = cols.get("City")
+        link_col = cols.get("Link")
+        if city_col and link_col:
+            link_to_row = read_link_to_row(ws)
+            # Read existing city values once
+            city_vals = ws.col_values(city_col)
+            city_by_row = {i + 1: (v or "").strip() for i, v in enumerate(city_vals)}
+            updates = []
+            for j in jobs:
+                if not j.city:
+                    continue
+                u = canonicalize_url(j.url)
+                row = link_to_row.get(u)
+                if not row:
+                    continue
+                if city_by_row.get(row):
+                    continue
+                updates.append((row, city_col, j.city))
+            if updates:
+                logger.info("Backfilling City for rows=%d", len(updates))
+                update_cells(ws, updates)
+    except Exception:
+        logger.exception("City backfill failed")
 
     rows = to_rows(new_jobs)
     append_rows(ws, rows)

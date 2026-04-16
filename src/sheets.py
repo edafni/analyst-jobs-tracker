@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Iterable
+from typing import Iterable, Dict, List, Tuple
 
 import gspread
 from google.oauth2.service_account import Credentials
@@ -73,6 +73,8 @@ def ensure_headers(ws: gspread.Worksheet) -> None:
         return
     # Migration: older version without City column
     if stripped == ["Company", "Job Title", "Link", "Status", "Timestamp", "Score"]:
+        # Insert a City column (B) so existing data shifts right safely.
+        ws.insert_cols([["City"]], col=2)
         ws.update("A1", [HEADERS])
         return
     if first_row:
@@ -80,22 +82,55 @@ def ensure_headers(ws: gspread.Worksheet) -> None:
     ws.update("A1", [HEADERS])
 
 
-def read_existing_links(ws: gspread.Worksheet) -> set[str]:
-    # Find the Link column by header name
+def get_column_indices(ws: gspread.Worksheet) -> Dict[str, int]:
     headers = ws.row_values(1)
     if not headers:
         ensure_headers(ws)
         headers = ws.row_values(1)
-    try:
-        link_idx = headers.index("Link") + 1  # 1-based
-    except ValueError:
-        ensure_headers(ws)
-        headers = ws.row_values(1)
-        link_idx = headers.index("Link") + 1
+    return {h.strip(): i + 1 for i, h in enumerate(headers) if h and h.strip()}
+
+
+def read_existing_links(ws: gspread.Worksheet) -> set[str]:
+    cols = get_column_indices(ws)
+    link_idx = cols.get("Link")
+    if not link_idx:
+        raise RuntimeError("Could not find 'Link' column in worksheet")
 
     col_vals = ws.col_values(link_idx)
     # Skip header
     return {v.strip() for v in col_vals[1:] if v and v.strip()}
+
+
+def read_link_to_row(ws: gspread.Worksheet) -> Dict[str, int]:
+    cols = get_column_indices(ws)
+    link_idx = cols.get("Link")
+    if not link_idx:
+        raise RuntimeError("Could not find 'Link' column in worksheet")
+    col_vals = ws.col_values(link_idx)
+    out: Dict[str, int] = {}
+    for i, v in enumerate(col_vals[1:], start=2):
+        vv = (v or "").strip()
+        if vv and vv not in out:
+            out[vv] = i
+    return out
+
+
+@retry(reraise=True, stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=10))
+def update_cells(ws: gspread.Worksheet, updates: List[Tuple[int, int, str]]) -> None:
+    if not updates:
+        return
+    # Grouped range update (single API call) over bounding box
+    min_r = min(r for r, _, _ in updates)
+    max_r = max(r for r, _, _ in updates)
+    min_c = min(c for _, c, _ in updates)
+    max_c = max(c for _, c, _ in updates)
+    cells = ws.range(min_r, min_c, max_r, max_c)
+    index = {(cell.row, cell.col): cell for cell in cells}
+    for r, c, v in updates:
+        cell = index.get((r, c))
+        if cell is not None:
+            cell.value = v
+    ws.update_cells(list(index.values()), value_input_option="USER_ENTERED")
 
 
 @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=10))
