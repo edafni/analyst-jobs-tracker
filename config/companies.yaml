@@ -1,0 +1,22 @@
+# Add/edit companies here. Prefer companies that use Greenhouse/Lever (easier, more stable).
+# Each entry:
+# - name: Display name (written to the sheet)
+# - careers_url: The page humans use
+# - type: lever | greenhouse | html
+# - org: (for lever/greenhouse) identifier used by the ATS
+
+companies:
+  - name: Remitly
+    careers_url: https://www.remitly.com/us/en/careers
+    type: html
+
+  # Examples (uncomment and fill in real org IDs if needed):
+  # - name: ExampleLeverCo
+  #   careers_url: https://jobs.lever.co/example
+  #   type: lever
+  #   org: example
+  #
+  # - name: ExampleGreenhouseCo
+  #   careers_url: https://boards.greenhouse.io/example
+  #   type: greenhouse
+  #   org: example

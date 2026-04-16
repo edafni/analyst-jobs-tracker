@@ -1,0 +1,8 @@
+beautifulsoup4
+gspread
+google-auth
+pandas
+python-dateutil
+PyYAML
+requests
+tenacity
