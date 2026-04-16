@@ -5,6 +5,7 @@
 # - type: lever | greenhouse | html
 # - org: (for lever/greenhouse) identifier used by the ATS
 
+# config_version: 2026-04-16
 companies:
   # Greenhouse (working collectors)
   - name: Melio
