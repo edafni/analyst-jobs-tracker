@@ -14,15 +14,15 @@ companies:
     org: melio
 
   - name: DoorLoop
-    careers_url: ""
+    careers_url: https://doorloop.com/careers
     type: html
 
   - name: Viber
-    careers_url: ""
+    careers_url: https://www.viber.com/en/careers
     type: html
 
   - name: Reeco
-    careers_url: ""
+    careers_url: https://reeco.io/careers
     type: html
 
   - name: Payoneer
@@ -31,7 +31,7 @@ companies:
     org: payoneer
 
   - name: PlayStudio
-    careers_url: ""
+    careers_url: https://playstudios.com/careers/
     type: html
 
   - name: Yotpo
@@ -40,27 +40,27 @@ companies:
     org: yotpo
 
   - name: nsure
-    careers_url: ""
+    careers_url: https://nsure.ai/careers
     type: html
 
   - name: Quantum Machines
-    careers_url: ""
+    careers_url: https://www.quantum-machines.co/careers/
     type: html
 
   - name: Guardio
-    careers_url: ""
+    careers_url: https://www.guard.io/careers
     type: html
 
   - name: Carefam
-    careers_url: ""
+    careers_url: https://www.carefam.com/careers/
     type: html
 
   - name: Port.io
-    careers_url: ""
+    careers_url: https://www.getport.io/careers
     type: html
 
   - name: Sentra
-    careers_url: ""
+    careers_url: https://sentra.io/careers
     type: html
 
   - name: Similarweb
@@ -79,7 +79,7 @@ companies:
     org: gongio
 
   - name: Apono
-    careers_url: ""
+    careers_url: https://www.apono.io/careers/
     type: html
 
   - name: Pagaya
@@ -119,7 +119,7 @@ companies:
     type: html
 
   - name: Faye
-    careers_url: ""
+    careers_url: https://www.withfaye.com/careers/
     type: html
 
   - name: Base44
@@ -127,79 +127,71 @@ companies:
     type: html
 
   - name: Madlan
-    careers_url: ""
+    careers_url: https://www.madlan.co.il/etc/jobs/
     type: html
 
   - name: ExpressVPN
-    careers_url: ""
+    careers_url: https://www.expressvpn.com/jobs/job-openings/job?srsltid=AfmBOooDaFH-R9n9yysh3bZKjyvVLgGHca1jy5qIsg_dDDumDd8s_yzK/
     type: html
 
   - name: Tavily
-    careers_url: ""
+    careers_url: "https://www.tavily.com/careers/jobs/
     type: html
 
   - name: Grip Security
-    careers_url: ""
+    careers_url: https://www.comeet.com/jobs/grip/A8.001/
     type: html
 
   - name: Moveo Source
-    careers_url: ""
+    careers_url: https://www.moveosource.com/
     type: html
 
   - name: Nebius Group
-    careers_url: ""
+    careers_url: https://careers.nebius.com/?_gl=1*ra3hzm*_gcl_au*MTUyODMzMDEwMS4xNzc2MzI2NTY1/
     type: html
 
   - name: Moonee
-    careers_url: ""
-    type: html
-
-  - name: Credito
-    careers_url: ""
+    careers_url: https://www.moonee.io/career
     type: html
 
   - name: Kissterra
-    careers_url: ""
+    careers_url: https://kissterra.com/careers/
     type: html
 
   - name: paragon
-    careers_url: ""
+    careers_url: https://www.comeet.com/jobs/paragon/76.006/
     type: html
 
   - name: Tango
-    careers_url: ""
+    careers_url: https://business.tango.me/careers/
     type: html
 
   - name: Hyro
-    careers_url: ""
+    careers_url: https://www.comeet.com/jobs/hyro/B9.00A/
     type: html
 
   - name: Aidoc
-    careers_url: ""
+    careers_url: https://www.aidoc.com/about/careers/#positions/
     type: html
 
   - name: PeerPlay
-    careers_url: ""
+    careers_url: https://www.peerplay.com/careers/
     type: html
 
   - name: Minute Media
-    careers_url: ""
+    careers_url: https://www.minutemedia.com/company/careers/
     type: html
 
   - name: 8fig
-    careers_url: ""
+    careers_url: https://www.comeet.com/jobs/8fig/08.004/
     type: html
 
   - name: Whalo
-    careers_url: ""
-    type: html
-
-  - name: Aristocrat Interactive
-    careers_url: ""
-    type: html
+    careers_url: https://www.whalo.com/careers/
+    type: HTML
 
   - name: yad2
-    careers_url: ""
+    careers_url: https://www.career.yad2.co.il/
     type: html
 
   # Examples (uncomment and fill in real org IDs if needed):
