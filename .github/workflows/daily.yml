@@ -35,6 +35,8 @@ jobs:
           GOOZALI_TIMEOUT_MS: "180000"
           # Use the Goozali Airtable view URL (can be changed later)
           GOOZALI_AIRTABLE_URL: "https://airtable.com/appwewqLk7iUY4azc/shrQBuWjXd0YgPqV6/tblnk93ouV3B2ce9b"
+          # If you supply a stable CSV URL, it will be used instead of Playwright:
+          # GOOZALI_CSV_URL: ${{ secrets.GOOZALI_CSV_URL }}
         run: |
           python -m src.pipeline
 

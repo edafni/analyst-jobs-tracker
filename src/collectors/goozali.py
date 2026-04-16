@@ -9,7 +9,10 @@ from urllib.parse import urljoin
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 from src.models import JobPosting
-from src.utils import canonicalize_url
+from src.utils import canonicalize_url, http_get
+
+import pandas as pd
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +31,14 @@ def collect_goozali() -> list[JobPosting]:
     to render the public view and scrape visible rows.
 
     Env:
+      - GOOZALI_CSV_URL: if set, download and parse CSV directly (recommended, reliable)
       - GOOZALI_AIRTABLE_URL: override the shared view URL
       - GOOZALI_MAX_ROWS: max number of rows to scrape (default 300)
     """
+    csv_url = os.environ.get("GOOZALI_CSV_URL", "").strip()
+    if csv_url:
+        return _collect_from_csv(csv_url)
+
     url = os.environ.get("GOOZALI_AIRTABLE_URL", "").strip() or DEFAULT_GOOZALI_AIRTABLE_URL
     max_rows = int(os.environ.get("GOOZALI_MAX_ROWS", "300").strip() or "300")
     timeout_ms = int(os.environ.get("GOOZALI_TIMEOUT_MS", "180000").strip() or "180000")
@@ -170,5 +178,64 @@ def collect_goozali() -> list[JobPosting]:
         browser.close()
 
     logger.info("goozali collected=%d", len(out))
+    return out
+
+
+def _collect_from_csv(csv_url: str) -> list[JobPosting]:
+    """
+    Reliable mode: user supplies a stable CSV URL (e.g., file hosted in GitHub raw).
+    """
+    resp = http_get(csv_url, timeout_s=60, headers={"Accept": "text/csv,*/*"})
+    # Airtable exports can contain messy quoting; use python engine + skip bad lines.
+    df = pd.read_csv(BytesIO(resp.content), engine="python", on_bad_lines="skip")
+    if df.empty:
+        logger.info("goozali csv empty url=%s", csv_url)
+        return []
+
+    cols = [str(c).strip() for c in df.columns]
+    cols_l = [c.lower() for c in cols]
+
+    def find(keys: list[str]) -> Optional[str]:
+        for k in keys:
+            for c, cl in zip(cols, cols_l):
+                if k in cl:
+                    return c
+        return None
+
+    company_col = find(["company"])
+    title_col = find(["job title", "title", "position", "role"])
+    link_col = find(["link", "url", "apply"])
+    city_col = find(["location", "city"])
+
+    if not (company_col and title_col and link_col):
+        logger.warning("goozali csv missing expected columns cols=%s", cols)
+        return []
+
+    now = datetime.now(timezone.utc)
+    out: list[JobPosting] = []
+    for _, row in df.iterrows():
+        company = str(row.get(company_col, "")).strip()
+        title = str(row.get(title_col, "")).strip()
+        link = str(row.get(link_col, "")).strip()
+        if not (company and title and link) or link.lower() in {"nan", "none"}:
+            continue
+        city = None
+        if city_col:
+            v = str(row.get(city_col, "")).strip()
+            if v and v.lower() not in {"nan", "none"}:
+                city = v
+
+        out.append(
+            JobPosting(
+                company=company,
+                city=city,
+                title=title,
+                url=canonicalize_url(link),
+                source="goozali_csv",
+                collected_at_utc=now,
+            )
+        )
+
+    logger.info("goozali_csv collected=%d", len(out))
     return out
 
