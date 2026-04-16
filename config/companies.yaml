@@ -13,15 +13,55 @@ companies:
     type: greenhouse
     org: melio
 
+  - name: DoorLoop
+    careers_url: ""
+    type: html
+
+  - name: Viber
+    careers_url: ""
+    type: html
+
+  - name: Reeco
+    careers_url: ""
+    type: html
+
   - name: Payoneer
     careers_url: https://boards.greenhouse.io/payoneer
     type: greenhouse
     org: payoneer
 
+  - name: PlayStudio
+    careers_url: ""
+    type: html
+
   - name: Yotpo
     careers_url: https://boards.greenhouse.io/yotpo
     type: greenhouse
     org: yotpo
+
+  - name: nsure
+    careers_url: ""
+    type: html
+
+  - name: Quantum Machines
+    careers_url: ""
+    type: html
+
+  - name: Guardio
+    careers_url: ""
+    type: html
+
+  - name: Carefam
+    careers_url: ""
+    type: html
+
+  - name: Port.io
+    careers_url: ""
+    type: html
+
+  - name: Sentra
+    careers_url: ""
+    type: html
 
   - name: Similarweb
     careers_url: https://boards.greenhouse.io/similarweb
@@ -37,6 +77,10 @@ companies:
     careers_url: https://boards.greenhouse.io/gongio
     type: greenhouse
     org: gongio
+
+  - name: Apono
+    careers_url: ""
+    type: html
 
   - name: Pagaya
     careers_url: https://boards.greenhouse.io/pagaya
@@ -72,6 +116,90 @@ companies:
 
   - name: Remitly
     careers_url: https://www.remitly.com/us/en/careers
+    type: html
+
+  - name: Faye
+    careers_url: ""
+    type: html
+
+  - name: Base44
+    careers_url: https://careers.base44.com/
+    type: html
+
+  - name: Madlan
+    careers_url: ""
+    type: html
+
+  - name: ExpressVPN
+    careers_url: ""
+    type: html
+
+  - name: Tavily
+    careers_url: ""
+    type: html
+
+  - name: Grip Security
+    careers_url: ""
+    type: html
+
+  - name: Moveo Source
+    careers_url: ""
+    type: html
+
+  - name: Nebius Group
+    careers_url: ""
+    type: html
+
+  - name: Moonee
+    careers_url: ""
+    type: html
+
+  - name: Credito
+    careers_url: ""
+    type: html
+
+  - name: Kissterra
+    careers_url: ""
+    type: html
+
+  - name: paragon
+    careers_url: ""
+    type: html
+
+  - name: Tango
+    careers_url: ""
+    type: html
+
+  - name: Hyro
+    careers_url: ""
+    type: html
+
+  - name: Aidoc
+    careers_url: ""
+    type: html
+
+  - name: PeerPlay
+    careers_url: ""
+    type: html
+
+  - name: Minute Media
+    careers_url: ""
+    type: html
+
+  - name: 8fig
+    careers_url: ""
+    type: html
+
+  - name: Whalo
+    careers_url: ""
+    type: html
+
+  - name: Aristocrat Interactive
+    careers_url: ""
+    type: html
+
+  - name: yad2
+    careers_url: ""
     type: html
 
   # Examples (uncomment and fill in real org IDs if needed):
