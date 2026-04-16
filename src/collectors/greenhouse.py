@@ -23,6 +23,10 @@ def collect_greenhouse(org: str, company_name: str) -> list[JobPosting]:
     for job in data.get("jobs", []) or []:
         title = (job.get("title") or "").strip()
         abs_url = canonicalize_url(job.get("absolute_url") or "")
+        loc = job.get("location") or {}
+        city = None
+        if isinstance(loc, dict):
+            city = (loc.get("name") or "").strip() or None
         if not title or not abs_url:
             continue
         out.append(
@@ -30,6 +34,7 @@ def collect_greenhouse(org: str, company_name: str) -> list[JobPosting]:
                 company=company_name,
                 title=title,
                 url=abs_url,
+                city=city,
                 source=f"greenhouse:{org}",
                 collected_at_utc=now,
             )

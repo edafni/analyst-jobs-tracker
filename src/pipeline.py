@@ -54,6 +54,7 @@ def to_rows(jobs: list[JobPosting]) -> list[list]:
         rows.append(
             [
                 j.company,
+                j.city or "",
                 j.title,
                 canonicalize_url(j.url),
                 "New",
@@ -78,7 +79,14 @@ def main() -> int:
     # Normalize and dedupe within-run by URL
     df = pd.DataFrame(
         [
-            {"company": j.company, "title": j.title, "url": canonicalize_url(j.url), "source": j.source, "collected_at": j.collected_at_utc}
+            {
+                "company": j.company,
+                "city": j.city,
+                "title": j.title,
+                "url": canonicalize_url(j.url),
+                "source": j.source,
+                "collected_at": j.collected_at_utc,
+            }
             for j in filtered
         ]
     )
@@ -92,6 +100,7 @@ def main() -> int:
             company=row["company"],
             title=row["title"],
             url=row["url"],
+            city=row.get("city"),
             source=row["source"],
             collected_at_utc=row["collected_at"],
         )

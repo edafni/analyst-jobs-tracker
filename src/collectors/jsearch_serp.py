@@ -51,6 +51,7 @@ def collect_duckduckgo_serp(*, query: str) -> list[JobPosting]:
                 company=company,
                 title=job_title,
                 url=job_url,
+                city=None,
                 source="duckduckgo",
                 collected_at_utc=now,
             )

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 SHEET_TITLE = "Analyst Jobs Tracker"
 DEFAULT_WORKSHEET_TITLE = "Analyst Jobs Tracker"
-HEADERS = ["Company", "Job Title", "Link", "Status", "Timestamp", "Score"]
+HEADERS = ["Company", "City", "Job Title", "Link", "Status", "Timestamp", "Score"]
 
 
 def _get_service_account_json() -> dict:
@@ -68,7 +68,12 @@ def open_or_create_worksheet(spreadsheet: gspread.Spreadsheet) -> gspread.Worksh
 
 def ensure_headers(ws: gspread.Worksheet) -> None:
     first_row = ws.row_values(1)
-    if [c.strip() for c in first_row] == HEADERS:
+    stripped = [c.strip() for c in first_row]
+    if stripped == HEADERS:
+        return
+    # Migration: older version without City column
+    if stripped == ["Company", "Job Title", "Link", "Status", "Timestamp", "Score"]:
+        ws.update("A1", [HEADERS])
         return
     if first_row:
         logger.warning("Worksheet has unexpected headers; overwriting row 1 with expected headers.")

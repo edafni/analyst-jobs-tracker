@@ -39,6 +39,7 @@ def collect_remotive(*, location_hint: str = "israel", query: str = "analyst") -
                     company=company,
                     title=title,
                     url=job_url,
+                    city=(job.get("candidate_required_location") or "").strip() or None,
                     source="remotive",
                     collected_at_utc=now,
                 )

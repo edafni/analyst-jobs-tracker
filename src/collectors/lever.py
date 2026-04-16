@@ -22,6 +22,10 @@ def collect_lever(org: str, company_name: str) -> list[JobPosting]:
     out: list[JobPosting] = []
     for job in data or []:
         title = (job.get("text") or "").strip()
+        categories = job.get("categories") or {}
+        city = None
+        if isinstance(categories, dict):
+            city = (categories.get("location") or "").strip() or None
         host = (job.get("hostedUrl") or "").strip()
         if not host:
             host = (job.get("applyUrl") or "").strip()
@@ -33,6 +37,7 @@ def collect_lever(org: str, company_name: str) -> list[JobPosting]:
                 company=company_name,
                 title=title,
                 url=url,
+                city=city,
                 source=f"lever:{org}",
                 collected_at_utc=now,
             )

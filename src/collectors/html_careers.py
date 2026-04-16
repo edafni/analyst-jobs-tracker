@@ -80,10 +80,23 @@ def _jobposting_to_posting(job: dict, *, company_name: str, base_url: str) -> Op
     if isinstance(org, dict):
         company = (org.get("name") or company_name).strip() or company_name
 
+    # City (best-effort)
+    city = None
+    job_loc = job.get("jobLocation")
+    if isinstance(job_loc, dict):
+        job_loc = [job_loc]
+    if isinstance(job_loc, list) and job_loc:
+        first = job_loc[0]
+        if isinstance(first, dict):
+            addr = first.get("address") or {}
+            if isinstance(addr, dict):
+                city = (addr.get("addressLocality") or addr.get("addressRegion") or "").strip() or None
+
     return JobPosting(
         company=company,
         title=title,
         url=url,
+        city=city,
         source=f"html:{urlparse(base_url).netloc}",
         collected_at_utc=datetime.now(timezone.utc),
     )
@@ -154,6 +167,7 @@ def collect_html_careers(company_name: str, careers_url: str, *, max_links: int 
                 company=company_name,
                 title=title,
                 url=url,
+                city=None,
                 source=f"html_links:{urlparse(careers_url).netloc}",
                 collected_at_utc=now,
             )
