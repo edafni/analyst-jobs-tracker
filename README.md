@@ -56,6 +56,8 @@ Notes:
 2. Repo → Settings → Secrets and variables → Actions → New repository secret
    - Name: `GOOGLE_SERVICE_ACCOUNT_JSON`
    - Value: paste the full JSON key contents
+   - Name: `ANALYST_JOBS_SPREADSHEET_ID`
+   - Value: the spreadsheet id from your sheet URL (the long string between `/d/` and `/edit`)
 3. Actions will run daily and append new jobs.
 
 ---

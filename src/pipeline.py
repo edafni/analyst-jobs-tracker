@@ -13,7 +13,7 @@ from src.filtering import is_relevant_analyst_role
 from src.logging_utils import setup_logging
 from src.models import JobPosting
 from src.scoring import score_job
-from src.sheets import get_client, open_or_create_tracker_sheet, open_or_create_worksheet, read_existing_links, append_rows
+from src.sheets import get_client, open_tracker_sheet, open_or_create_worksheet, read_existing_links, append_rows
 from src.utils import canonicalize_url
 
 logger = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def main() -> int:
 
     # Sheets: open, read existing links, append only new
     client = get_client()
-    ss = open_or_create_tracker_sheet(client)
+    ss = open_tracker_sheet(client)
     ws = open_or_create_worksheet(ss)
 
     existing = read_existing_links(ws)

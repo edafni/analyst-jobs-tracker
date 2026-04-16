@@ -33,12 +33,22 @@ def get_client() -> gspread.Client:
     return gspread.authorize(creds)
 
 
-def open_or_create_tracker_sheet(client: gspread.Client) -> gspread.Spreadsheet:
-    try:
-        return client.open(SHEET_TITLE)
-    except gspread.SpreadsheetNotFound:
-        logger.warning("Spreadsheet not found; creating: %s", SHEET_TITLE)
-        return client.create(SHEET_TITLE)
+def open_tracker_sheet(client: gspread.Client) -> gspread.Spreadsheet:
+    """
+    Opens the exact target spreadsheet.
+
+    Preferred: set env var ANALYST_JOBS_SPREADSHEET_ID (the long ID from the Google Sheets URL).
+    Fallback: open by title (SHEET_TITLE).
+
+    We intentionally DO NOT auto-create a spreadsheet here to avoid silently writing to a
+    service-account-owned sheet that the user can't see.
+    """
+    sheet_id = os.environ.get("ANALYST_JOBS_SPREADSHEET_ID", "").strip()
+    if sheet_id:
+        return client.open_by_key(sheet_id)
+
+    # Back-compat fallback (title-based) — requires the sheet to be shared to the service account.
+    return client.open(SHEET_TITLE)
 
 
 def open_or_create_worksheet(spreadsheet: gspread.Spreadsheet) -> gspread.Worksheet:
