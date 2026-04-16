@@ -103,8 +103,10 @@ def main() -> int:
     client = get_client()
     ss = open_tracker_sheet(client)
     ws = open_or_create_worksheet(ss)
+    logger.info("Writing to worksheet title=%s", ws.title)
 
     existing = read_existing_links(ws)
+    logger.info("Existing links in sheet=%d", len(existing))
     existing_canon = {canonicalize_url(u) for u in existing}
 
     new_jobs = [j for j in jobs if canonicalize_url(j.url) not in existing_canon]
