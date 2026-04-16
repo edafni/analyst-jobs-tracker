@@ -32,6 +32,7 @@ jobs:
           ENABLE_REMOTIVE: "1"
           ENABLE_DDG: "0"
           ENABLE_GOOZALI: "1"
+          GOOZALI_TIMEOUT_MS: "180000"
         run: |
           python -m src.pipeline
 

@@ -14,7 +14,7 @@ from src.utils import canonicalize_url
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_GOOZALI_AIRTABLE_URL = "https://airtable.com/shrQBuWjXd0YgPqV6"
+DEFAULT_GOOZALI_AIRTABLE_URL = "https://airtable.com/appwewqLk7iUY4azc/shrQBuWjXd0YgPqV6/tblnk93ouV3B2ce9b?viewControls=on"
 
 
 def _norm(s: str) -> str:
@@ -33,21 +33,42 @@ def collect_goozali() -> list[JobPosting]:
     """
     url = os.environ.get("GOOZALI_AIRTABLE_URL", "").strip() or DEFAULT_GOOZALI_AIRTABLE_URL
     max_rows = int(os.environ.get("GOOZALI_MAX_ROWS", "300").strip() or "300")
+    timeout_ms = int(os.environ.get("GOOZALI_TIMEOUT_MS", "180000").strip() or "180000")
 
     now = datetime.now(timezone.utc)
     out: list[JobPosting] = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        try:
-            page.goto(url, wait_until="domcontentloaded", timeout=60_000)
-            # Wait for the grid to appear
-            page.wait_for_selector('[role="grid"]', timeout=60_000)
-        except PlaywrightTimeoutError:
-            logger.warning("goozali playwright timeout url=%s", url)
-            browser.close()
-            return []
+        page = browser.new_page(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/125.0.0.0 Safari/537.36"
+            )
+        )
+
+        # Airtable can be slow; retry once with a fresh page.
+        for attempt in range(2):
+            try:
+                page.goto(url, wait_until="networkidle", timeout=timeout_ms)
+                page.wait_for_selector('[role="grid"], [role="table"]', timeout=timeout_ms)
+                break
+            except PlaywrightTimeoutError:
+                if attempt == 0:
+                    logger.warning("goozali playwright timeout (retrying) url=%s", url)
+                    page.close()
+                    page = browser.new_page(
+                        user_agent=(
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/125.0.0.0 Safari/537.36"
+                        )
+                    )
+                    continue
+                logger.warning("goozali playwright timeout url=%s", url)
+                browser.close()
+                return []
 
         # Extract column headers
         headers = page.eval_on_selector_all(
