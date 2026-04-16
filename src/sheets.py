@@ -54,6 +54,11 @@ def open_tracker_sheet(client: gspread.Client) -> gspread.Spreadsheet:
 def open_or_create_worksheet(spreadsheet: gspread.Spreadsheet) -> gspread.Worksheet:
     worksheet_title = os.environ.get("ANALYST_JOBS_WORKSHEET_TITLE", "").strip() or DEFAULT_WORKSHEET_TITLE
     try:
+        titles = [w.title for w in spreadsheet.worksheets()]
+    except Exception:
+        titles = []
+    logger.info("Target worksheet=%s; existing_worksheets=%s", worksheet_title, titles)
+    try:
         ws = spreadsheet.worksheet(worksheet_title)
     except gspread.WorksheetNotFound:
         ws = spreadsheet.add_worksheet(title=worksheet_title, rows=2000, cols=len(HEADERS))
