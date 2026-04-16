@@ -9,6 +9,7 @@ from typing import Optional
 import pandas as pd
 
 from src.collectors.company_pages import collect_company_pages
+from src.collectors.goozali import collect_goozali
 from src.collectors.jsearch_serp import collect_duckduckgo_serp
 from src.collectors.remotive import collect_remotive
 from src.filtering import is_relevant_analyst_role
@@ -52,6 +53,13 @@ def collect_all() -> list[JobPosting]:
 
     # Company ATS (lever/greenhouse) from config
     jobs.extend(collect_company_pages("config/companies.yaml"))
+
+    # Goozali (public Israel job board) — best effort
+    if os.environ.get("ENABLE_GOOZALI", "1").strip() == "1":
+        try:
+            jobs.extend(collect_goozali())
+        except Exception:
+            logger.exception("Goozali collector failed")
 
     # Free API source (may be remote)
     if os.environ.get("ENABLE_REMOTIVE", "1").strip() == "1":
