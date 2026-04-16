@@ -4,7 +4,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from typing import Optional
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 import pandas as pd
 
@@ -16,16 +16,23 @@ logger = logging.getLogger(__name__)
 
 GOOZALI_URLS = [
     "https://en.goozali.com/",
+    "https://goozali.com/",
     "https://www.goozali.com/",
     "https://test.goozali.com/",
 ]
 
 
 _GOOGLE_SHEETS_RE = re.compile(r"https?://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)", re.IGNORECASE)
+_AIRTABLE_RE = re.compile(r"https?://airtable\.com/(?:embed/)?(shr[a-zA-Z0-9]+)", re.IGNORECASE)
 
 
 def _extract_google_sheet_id(html: str) -> Optional[str]:
     m = _GOOGLE_SHEETS_RE.search(html or "")
+    return m.group(1) if m else None
+
+
+def _extract_airtable_share_id(html: str) -> Optional[str]:
+    m = _AIRTABLE_RE.search(html or "")
     return m.group(1) if m else None
 
 
@@ -54,6 +61,7 @@ def collect_goozali() -> list[JobPosting]:
     3) download CSV export and parse rows
     """
     sheet_id = None
+    airtable_share = None
     for u in GOOZALI_URLS:
         try:
             resp = http_get(u, timeout_s=30)
@@ -65,15 +73,28 @@ def collect_goozali() -> list[JobPosting]:
             sheet_id = sid
             logger.info("goozali detected google_sheet_id=%s from url=%s", sid, u)
             break
+        aid = _extract_airtable_share_id(resp.text)
+        if aid:
+            airtable_share = aid
+            logger.info("goozali detected airtable_share_id=%s from url=%s", aid, u)
+            break
 
-    if not sheet_id:
-        logger.info("goozali no embedded google sheet detected")
+    df = None
+    if sheet_id:
+        csv_url = _google_sheet_csv_url(sheet_id)
+        resp = http_get(csv_url, timeout_s=30, headers={"Accept": "text/csv"})
+        df = pd.read_csv(pd.io.common.BytesIO(resp.content))
+    elif airtable_share:
+        # Best-effort: Airtable public share sometimes supports CSV export via ?format=csv
+        share_url = f"https://airtable.com/{airtable_share}"
+        csv_url = f"{share_url}?format=csv"
+        resp = http_get(csv_url, timeout_s=30, headers={"Accept": "text/csv"})
+        df = pd.read_csv(pd.io.common.BytesIO(resp.content))
+    else:
+        logger.info("goozali no embedded google sheet or airtable share detected")
         return []
 
-    csv_url = _google_sheet_csv_url(sheet_id)
-    resp = http_get(csv_url, timeout_s=30, headers={"Accept": "text/csv"})
-    df = pd.read_csv(pd.io.common.BytesIO(resp.content))
-    if df.empty:
+    if df is None or df.empty:
         return []
 
     # Heuristic column mapping
