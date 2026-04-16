@@ -135,7 +135,7 @@ companies:
     type: html
 
   - name: Tavily
-    careers_url: "https://www.tavily.com/careers/jobs/
+    careers_url: https://www.tavily.com/careers/jobs/
     type: html
 
   - name: Grip Security
@@ -188,7 +188,7 @@ companies:
 
   - name: Whalo
     careers_url: https://www.whalo.com/careers/
-    type: HTML
+    type: html
 
   - name: yad2
     careers_url: https://www.career.yad2.co.il/
