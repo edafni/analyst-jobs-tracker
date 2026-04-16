@@ -33,6 +33,8 @@ jobs:
           ENABLE_DDG: "0"
           ENABLE_GOOZALI: "1"
           GOOZALI_TIMEOUT_MS: "180000"
+          # Use the Goozali Airtable view URL (can be changed later)
+          GOOZALI_AIRTABLE_URL: "https://airtable.com/appwewqLk7iUY4azc/shrQBuWjXd0YgPqV6/tblnk93ouV3B2ce9b"
         run: |
           python -m src.pipeline
 

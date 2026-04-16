@@ -14,7 +14,7 @@ from src.utils import canonicalize_url
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_GOOZALI_AIRTABLE_URL = "https://airtable.com/appwewqLk7iUY4azc/shrQBuWjXd0YgPqV6/tblnk93ouV3B2ce9b?viewControls=on"
+DEFAULT_GOOZALI_AIRTABLE_URL = "https://airtable.com/appwewqLk7iUY4azc/shrQBuWjXd0YgPqV6/tblnk93ouV3B2ce9b"
 
 
 def _norm(s: str) -> str:
@@ -39,32 +39,45 @@ def collect_goozali() -> list[JobPosting]:
     out: list[JobPosting] = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+            ],
+        )
+        context = browser.new_context(
             user_agent=(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/125.0.0.0 Safari/537.36"
-            )
+            ),
+            locale="en-US",
+            timezone_id="Asia/Jerusalem",
+            extra_http_headers={
+                "Accept-Language": "en-US,en;q=0.9",
+            },
         )
+        page = context.new_page()
 
         # Airtable can be slow; retry once with a fresh page.
         for attempt in range(2):
             try:
-                page.goto(url, wait_until="networkidle", timeout=timeout_ms)
-                page.wait_for_selector('[role="grid"], [role="table"]', timeout=timeout_ms)
+                page.goto(url, wait_until="load", timeout=timeout_ms)
+                content = page.content()
+                if "browser version is not supported" in content.lower():
+                    logger.warning("goozali airtable blocked (browser not supported) url=%s", url)
+                    browser.close()
+                    return []
+
+                # Wait for something grid-like to appear
+                page.wait_for_selector('[role="grid"], [role="table"], [role="columnheader"]', timeout=timeout_ms)
                 break
             except PlaywrightTimeoutError:
                 if attempt == 0:
                     logger.warning("goozali playwright timeout (retrying) url=%s", url)
                     page.close()
-                    page = browser.new_page(
-                        user_agent=(
-                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                            "AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/125.0.0.0 Safari/537.36"
-                        )
-                    )
+                    page = context.new_page()
                     continue
                 logger.warning("goozali playwright timeout url=%s", url)
                 browser.close()
