@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 import os
 from datetime import datetime, timezone
+import math
+from typing import Optional
 
 import pandas as pd
 
@@ -29,6 +31,20 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_LOCATION_QUERY = "Tel Aviv Israel"
+
+
+def _clean_city(value) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        v = value.strip()
+        return v or None
+    if isinstance(value, (int, float)):
+        if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+            return None
+        # Unexpected numeric; don't write it as a city.
+        return None
+    return None
 
 
 def collect_all() -> list[JobPosting]:
@@ -63,7 +79,7 @@ def to_rows(jobs: list[JobPosting]) -> list[list]:
         rows.append(
             [
                 j.company,
-                j.city or "",
+                _clean_city(j.city) or "",
                 j.title,
                 canonicalize_url(j.url),
                 "New",
@@ -109,7 +125,7 @@ def main() -> int:
             company=row["company"],
             title=row["title"],
             url=row["url"],
-            city=row.get("city"),
+            city=_clean_city(row.get("city")),
             source=row["source"],
             collected_at_utc=row["collected_at"],
         )
@@ -142,7 +158,8 @@ def main() -> int:
             city_by_row = {i + 1: (v or "").strip() for i, v in enumerate(city_vals)}
             updates = []
             for j in jobs:
-                if not j.city:
+                city = _clean_city(j.city)
+                if not city:
                     continue
                 u = canonicalize_url(j.url)
                 row = link_to_row.get(u)
@@ -150,7 +167,7 @@ def main() -> int:
                     continue
                 if city_by_row.get(row):
                     continue
-                updates.append((row, city_col, j.city))
+                updates.append((row, city_col, city))
             if updates:
                 logger.info("Backfilling City for rows=%d", len(updates))
                 update_cells(ws, updates)
